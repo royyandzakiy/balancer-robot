@@ -3,6 +3,11 @@
 
 # Never converted.
 *.png  binary
+*.jpg  binary
+*.ico  binary
+*.pdf  binary
+*.zst  binary
+*.idx  binary
 *.hex  binary
 *.bin  binary
 *.elf  binary

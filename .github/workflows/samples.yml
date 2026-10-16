@@ -1,0 +1,110 @@
+# .github/workflows/samples.yml
+# The template samples under firmware/samples/: build per board, twister on native_sim, Renode.
+# No hardware. The balancer app gets its own firmware.yml once it exists.
+name: Firmware samples
+
+on:
+  push:
+    paths: ['firmware/samples/**', '.github/workflows/samples.yml']
+  pull_request:
+    paths: ['firmware/samples/**', '.github/workflows/samples.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build ${{ matrix.board }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: ghcr.io/royyandzakiy/zephyr-devcontainer-ci:z4.4.0-sdk1.0.1
+    strategy:
+      # One broken board should not hide the result of the others.
+      fail-fast: false
+      matrix:
+        include:
+          - board: native_sim/native
+          - board: qemu_cortex_m3
+          - board: nrf5340dk/nrf5340/cpuapp
+          - board: nucleo_g474re
+          # ESP32 builds the app image only, as in NOTES.md.
+          - board: esp32_devkitc/esp32/procpu
+            args: --no-sysbuild
+          - board: esp32s3_devkitc/esp32s3/procpu
+            args: --no-sysbuild
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      # No west init needed: west finds its workspace through ZEPHYR_BASE, set by the image.
+      - name: Build emul-shell-gpio for ${{ matrix.board }}
+        run: west build -s firmware/samples/emul-shell-gpio -d build -p always -b ${{ matrix.board }} ${{ matrix.args }}
+
+  twister:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: ghcr.io/royyandzakiy/zephyr-devcontainer-ci:z4.4.0-sdk1.0.1
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run every sample suite on native_sim
+        run: west twister -T firmware/samples -p native_sim
+
+      # Reports and logs only, on every run, so a pass can be compared with a failure.
+      # The build directories are left out, they are hundreds of MB.
+      - name: Upload twister reports and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twister-reports
+          path: |
+            twister-out/twister.json
+            twister-out/twister_report.xml
+            twister-out/**/handler.log
+            twister-out/**/build.log
+            twister-out/**/twister_harness.log
+          if-no-files-found: warn
+
+  renode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: ghcr.io/royyandzakiy/zephyr-devcontainer-ci:z4.4.0-sdk1.0.1
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build renode-test for nrf52840dk
+        working-directory: firmware/samples/renode-test
+        run: west build -b nrf52840dk/nrf52840 -p always
+
+      # Run from build/ so the reports land there, as in the sample's README.
+      - name: Run the Robot suite
+        working-directory: firmware/samples/renode-test/build
+        run: renode-test ../button_led.robot
+
+      - name: Upload Robot reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renode-reports
+          path: |
+            firmware/samples/renode-test/build/log.html
+            firmware/samples/renode-test/build/report.html
+            firmware/samples/renode-test/build/robot_output.xml
+            firmware/samples/renode-test/build/logs/
+          if-no-files-found: warn

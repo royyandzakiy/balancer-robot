@@ -1,3 +1,4 @@
+# Shared base. firmware/ and companion-app/ add their own on top (InheritParentConfig).
 Checks:
   - 'bugprone-*'
   - 'modernize-*'
@@ -6,7 +7,6 @@ Checks:
   - '-cppcoreguidelines-pro-bounds-array-to-pointer-decay'
   - '-modernize-use-trailing-return-type'
   - '-cppcoreguidelines-avoid-magic-numbers'
-  - '-cppcoreguidelines-pro-type-vararg'
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/.*|include/.*'
 FormatStyle: file

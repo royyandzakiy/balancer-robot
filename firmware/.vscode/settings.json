@@ -1,0 +1,32 @@
+{
+  // Firmware window, inside the Zephyr devcontainer (workspace = firmware/).
+  // --query-driver lets clangd ask the Zephyr SDK GCCs (Xtensa, ARM, x86) for their system headers.
+  "clangd.path": "/usr/bin/clangd",
+  "clangd.checkUpdates": false,
+  "clangd.arguments": [
+    "--query-driver=/workdir/zephyr-sdks/toolchains/**/bin/*-gcc,/workdir/zephyr-sdks/toolchains/**/bin/*-g++,/usr/bin/gcc,/usr/bin/g++",
+    "--header-insertion=never",
+    "--completion-style=detailed",
+    "-j=4"
+  ],
+
+  // cpptools only for its debugger, never competing with clangd
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "C_Cpp.formatting": "disabled",
+
+  // Format on save with clangd, which reads the root .clang-format
+  "[cpp]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    "editor.formatOnSave": true
+  },
+  "[c]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    "editor.formatOnSave": true
+  },
+
+  "nrf-connect.applications": [
+    "${workspaceFolder}/app",
+    "${workspaceFolder}/samples/emul-shell-gpio",
+    "${workspaceFolder}/samples/renode-test"
+  ]
+}

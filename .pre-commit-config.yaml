@@ -3,6 +3,7 @@
 #   pre-commit install              # run automatically on `git commit`
 #   pre-commit run --all-files      # run over the whole tree once
 #
+# One config for the whole repo (pre-commit only reads the root one).
 # Hooks reuse the in-repo configs: clang-format -> .clang-format,
 # cmake-format/cmake-lint -> .cmake-format.yaml.
 repos:
@@ -15,8 +16,8 @@ repos:
         args: [--fix=lf]
       - id: check-yaml
       - id: check-json
-        # .vscode/*.json are JSONC (comments) — skip the strict JSON parser there.
-        exclude: ^\.vscode/
+        # VS Code and devcontainer configs are JSONC (comments): skip the strict JSON parser there.
+        exclude: (^|/)\.vscode/|^\.devcontainer/
       - id: check-merge-conflict
 
   # C / C++ formatting — pin to your toolchain (LLVM 20.x).

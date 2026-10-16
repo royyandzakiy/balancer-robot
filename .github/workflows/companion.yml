@@ -1,0 +1,134 @@
+# .github/workflows/companion.yml
+# companion-app/ on Windows (clang-cl) and Linux (clang, headless via QT_QPA_PLATFORM=offscreen).
+# Tests per preset: GTest (core), QtTest (viewmodels), Qt Quick Test (QML), + Spix E2E on the *-e2e presets.
+name: Companion
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths: ['companion-app/**', 'protocol/**', '.github/**', '.clang-format', '.clang-tidy']
+  pull_request:
+    paths: ['companion-app/**', 'protocol/**', '.github/**', '.clang-format', '.clang-tidy']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  APP_DIR: companion-app
+
+jobs:
+  windows:
+    name: windows ${{ matrix.preset }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # clang-cl-e2e = Debug + ENABLE_SPIX: also runs the Spix E2E test (test/e2e/). Never packaged.
+        preset: [clang-cl-debug, clang-cl-release, clang-cl-e2e]
+    env:
+      # vcpkg's binary cache. The first run builds Qt from source (~1h+); later runs restore it.
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-cache
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      # After msvc-dev-cmd, which may point VCPKG_ROOT at Visual Studio's bundled vcpkg.
+      - name: Set up vcpkg
+        shell: bash
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          if [ ! -d "$HOME/vcpkg" ]; then
+            git clone https://github.com/microsoft/vcpkg.git "$HOME/vcpkg"
+            "$HOME/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          fi
+          echo "VCPKG_ROOT=$HOME/vcpkg" >> "$GITHUB_ENV"
+
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.vcpkg-cache
+          key: vcpkg-windows-${{ hashFiles('companion-app/vcpkg.json') }}
+          restore-keys: vcpkg-windows-
+
+      - uses: ./.github/actions/cmake-build-test
+        with:
+          preset: ${{ matrix.preset }}
+          working-directory: ${{ env.APP_DIR }}
+          cmake-args: -D BUILD_TESTING=ON -D PKG_MANAGER=vcpkg -D "VCPKG_ROOT_PATH=${{ env.VCPKG_ROOT }}"
+
+      - name: QML lint + format check
+        shell: bash
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          cmake --build --preset ${{ matrix.preset }} --target all_qmllint
+          cmake --build --preset ${{ matrix.preset }} --target qml-format-check
+
+      - name: Package
+        if: matrix.preset == 'clang-cl-release'
+        shell: bash
+        working-directory: ${{ env.APP_DIR }}
+        run: cpack --config build/${{ matrix.preset }}/CPackConfig.cmake
+
+      - name: Upload package
+        if: matrix.preset == 'clang-cl-release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-windows
+          path: ${{ env.APP_DIR }}/build/${{ matrix.preset }}/package/*.zip
+          if-no-files-found: error
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-windows-${{ matrix.preset }}
+          path: ${{ env.APP_DIR }}/build/${{ matrix.preset }}/Testing/Temporary
+          if-no-files-found: ignore
+
+  linux:
+    name: linux ${{ matrix.preset }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        # clang-linux-e2e = Debug + ENABLE_SPIX, headless. clang-linux-asan = ASan/LSan + UBSan.
+        preset: [clang-linux-debug, clang-linux-asan, clang-linux-e2e]
+    env:
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-cache
+    steps:
+      - uses: actions/checkout@v4
+
+      # The same script WSL2 uses: pinned clang, Qt build deps, vcpkg in ~/vcpkg (exports VCPKG_ROOT).
+      - name: Set up toolchain
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          bash ${{ env.APP_DIR }}/scripts/setup-ubuntu.sh
+
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.vcpkg-cache
+          key: vcpkg-linux-${{ hashFiles('companion-app/vcpkg.json') }}
+          restore-keys: vcpkg-linux-
+
+      - uses: ./.github/actions/cmake-build-test
+        with:
+          preset: ${{ matrix.preset }}
+          working-directory: ${{ env.APP_DIR }}
+          cmake-args: -D BUILD_TESTING=ON -D PKG_MANAGER=vcpkg -D "VCPKG_ROOT_PATH=${{ env.VCPKG_ROOT }}"
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-linux-${{ matrix.preset }}
+          path: ${{ env.APP_DIR }}/build/${{ matrix.preset }}/Testing/Temporary
+          if-no-files-found: ignore

@@ -7,14 +7,14 @@ namespace core {
 // stays unit-testable with GTest alone (test/test_counter.cpp).
 class Counter {
   public:
-	void increment();
-	void reset();
+    void increment();
+    void reset();
 
-	[[nodiscard]] auto count() const -> int;
-	[[nodiscard]] auto label() const -> std::string;
+    [[nodiscard]] auto count() const -> int;
+    [[nodiscard]] auto label() const -> std::string;
 
   private:
-	int count_ = 0;
+    int count_ = 0;
 };
 
 } // namespace core

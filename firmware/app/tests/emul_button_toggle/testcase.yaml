@@ -1,0 +1,19 @@
+tests:
+  app.emul_shell_gpio.pytest:
+    build_only: false
+    platform_allow:
+      - nrf5340dk/nrf5340/cpuapp
+      - nucleo_g474re
+      - esp32s3_devkitc/esp32s3/procpu
+      - native_sim
+    # Runs pytest/test_gpio_toggle.py.
+    harness: pytest
+
+    # Alternative without pytest: Twister's built-in shell harness.
+    # harness: shell
+    # harness_config:
+    #   shell_commands:
+    #     - command: "test_btn"
+    #       expected: "Test: Triggering emulated button press"
+    #     - command: "help"
+    #       expected: "Please press the <Tab> button"

@@ -1,9 +1,14 @@
 # .github/actions/cmake-build-test/action.yaml
+# Shared by companion.yml and (later) the firmware host unit tests. Composite actions don't inherit the
+# job's defaults.run.working-directory, hence the explicit input.
 name: CMake Build & Test
 description: 'Configures, builds, and tests a CMake project using presets'
 inputs:
   preset:
     description: 'The CMake preset to use for configuration and building'
+    required: true
+  working-directory:
+    description: 'Folder holding the CMakePresets.json (companion-app, firmware, ...)'
     required: true
   cmake-args:
     description: 'Additional arguments passed directly to the CMake configure command'
@@ -16,6 +21,7 @@ runs:
   steps:
     - name: Configure
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         if [ "${{ inputs.retry }}" = "true" ]; then
           for i in 1 2 3; do
@@ -30,8 +36,10 @@ runs:
 
     - name: Build
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: cmake --build --preset ${{ inputs.preset }}
 
     - name: Test
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: ctest --preset test-${{ inputs.preset }}

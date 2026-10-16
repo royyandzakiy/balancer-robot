@@ -16,7 +16,7 @@ renode-test/
 ## Run it
 
 ```bash
-cd apps/renode-test
+cd firmware/samples/renode-test
 ```
 
 ```bash
@@ -30,7 +30,7 @@ cd build && renode-test ../button_led.robot
 `renode-test` writes `log.html`, `report.html`, `robot_output.xml` and `logs/` into the
 directory it starts from, so running it from `build/` keeps them out of the source tree.
 
-To press the button by hand, from `apps/renode-test`:
+To press the button by hand, from `firmware/samples/renode-test`:
 
 ```bash
 renode --console --disable-xwt -e "\$elf=@$PWD/build/zephyr/zephyr.elf; include @run_nrf52.resc; start"

@@ -1,0 +1,6 @@
+# LOG_*/printk are varargs and Zephyr's API is macros by design.
+InheritParentConfig: true
+Checks:
+  - '-cppcoreguidelines-pro-type-vararg'
+  - '-cppcoreguidelines-macro-usage'
+HeaderFilterRegex: 'src/.*'

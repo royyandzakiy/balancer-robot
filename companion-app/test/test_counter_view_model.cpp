@@ -5,28 +5,28 @@
 
 // QtTest, not GTest: QSignalSpy and Qt's own types make viewmodel checks straightforward.
 class TestCounterViewModel : public QObject {
-	Q_OBJECT
+    Q_OBJECT
 
   private slots:
-	void incrementNotifiesQml() {
-		CounterViewModel vm;
-		const QSignalSpy spy(&vm, &CounterViewModel::countChanged);
+    void incrementNotifiesQml() {
+        CounterViewModel vm;
+        const QSignalSpy spy(&vm, &CounterViewModel::countChanged);
 
-		vm.increment();
+        vm.increment();
 
-		QCOMPARE(spy.count(), 1);
-		QCOMPARE(vm.count(), 1);
-		QCOMPARE(vm.label(), QStringLiteral("Clicked once"));
-	}
+        QCOMPARE(spy.count(), 1);
+        QCOMPARE(vm.count(), 1);
+        QCOMPARE(vm.label(), QStringLiteral("Clicked once"));
+    }
 
-	void resetAtZeroDoesNotNotify() {
-		CounterViewModel vm;
-		const QSignalSpy spy(&vm, &CounterViewModel::countChanged);
+    void resetAtZeroDoesNotNotify() {
+        CounterViewModel vm;
+        const QSignalSpy spy(&vm, &CounterViewModel::countChanged);
 
-		vm.reset();
+        vm.reset();
 
-		QCOMPARE(spy.count(), 0);
-	}
+        QCOMPARE(spy.count(), 0);
+    }
 };
 
 QTEST_APPLESS_MAIN(TestCounterViewModel)

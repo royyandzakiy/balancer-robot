@@ -2,7 +2,7 @@
 :description: Runs a Zephyr ELF on Renode's nRF52840 model, with the DK's sw0 and led0.
 :
 : Set $elf to an absolute path before including this script. There is no `start`, so
-: button_led.robot can attach its testers first. By hand, from apps/renode-test:
+: button_led.robot can attach its testers first. By hand, from firmware/samples/renode-test:
 :
 :   renode --console --disable-xwt -e "\$elf=@$PWD/build/zephyr/zephyr.elf; include @run_nrf52.resc; start"
 :

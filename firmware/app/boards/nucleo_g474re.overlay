@@ -1,0 +1,1 @@
+/* Nothing to add: the board's devicetree already sets led0 = &user_led and sw0 = &user_button. */

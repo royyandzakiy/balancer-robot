@@ -1,6 +1,6 @@
-#include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 
 /* Same code for a physical or an emulated button, picked by the sw0 alias. */
@@ -14,15 +14,13 @@ static struct gpio_callback button_cb_data;
 
 static bool led_state = false;
 
-void button_pressed_cb(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
-{
+void button_pressed_cb(const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
     gpio_pin_toggle_dt(&led);
     led_state = !led_state;
     printk("Button pressed! LED is now %s\n", led_state ? "ON" : "OFF");
 }
 
-int main()
-{
+int main() {
     int ret = 0;
 
     printk("GPIO Button + LED Toggle started\n");

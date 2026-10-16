@@ -1,5 +1,5 @@
 {
-  "name": "Zephyr Development",
+  "name": "Firmware (Zephyr)",
   "image": "ghcr.io/royyandzakiy/zephyr-devcontainer-devel:z4.4.0-sdk1.0.1",
 
   // The extension host cannot read what use-vanilla exports in a shell, so the
@@ -52,6 +52,8 @@
     }
   },
 
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // The whole repo is mounted (../protocol, ../tools stay reachable), but the window opens on
+  // firmware/ so firmware/.vscode and firmware/.clangd apply.
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/firmware",
   "postStartCommand": "/opt/devcontainer/setup-sdks.sh"
 }

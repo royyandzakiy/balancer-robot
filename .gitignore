@@ -1,10 +1,15 @@
-# Build output, including `-d` dirs like build_native64 and build_nrf5340dk.
+# companion-app/.gitignore covers the Qt/CMake side.
+
+# Zephyr build output, including `-d` dirs like build_native64 and build_nrf5340dk.
 # Anchored, since a bare build* would also ignore folders like docs/building/.
 /build*/
-apps/**/build*/
+firmware/**/build*/
 
 # Twister output. Not twister*/, which would also ignore twister_harness/ or docs/twister/.
 twister-out*/
+
+# clangd background index
+.cache/
 
 # Python
 **/.venv/
@@ -14,12 +19,11 @@ twister-out*/
 # Local only
 .env
 .claude/settings.local.json
+.codebase-memory/
 ANSWER.md
+.idea/
 
-# OS files.
+# OS files
 .DS_Store
 Thumbs.db
-
-.idea
-
-.idea
+desktop.ini

@@ -30,7 +30,7 @@ Why one repo: protocol changes land in one commit (no tags/FetchContent between 
 tracker, shared style and pre-commit. The two halves never share a build: no root `CMakeLists.txt`, no root
 `CMakePresets.json`. Each subfolder builds standalone, so `git subtree split` can pull either out later.
 
-### 2.1 Current state and fixes
+### 2.1 Cleanup (done 2026-10-16, not committed yet)
 
 | Found | Problem | Fix |
 |---|---|---|
@@ -41,7 +41,24 @@ tracker, shared style and pre-commit. The two halves never share a build: no roo
 | `companion-app/.editorconfig` with `root = true`, root `.editorconfig` too | the nested one stops inheritance | one root `.editorconfig`, delete the nested one |
 | `companion-app/.pre-commit-config.yaml` | pre-commit only reads the repo root config | merge into root `.pre-commit-config.yaml` |
 | `firmware/emul-shell-gpio`, `firmware/renode-test` are template samples | not the product | move to `firmware/samples/` as reference; CI only builds them on demand |
-| Old repos `balancer-robot-zephyr`, `balancer-robot-desktop-companion`, `balancer-robot-workspace`, `balancer-robot-fw` | superseded | archive read-only on GitHub |
+| Old repos `balancer-robot-zephyr`, `balancer-robot-desktop-companion`, `balancer-robot-workspace`, `balancer-robot-fw` | superseded | archive read-only on GitHub (**still to do, by hand**) |
+
+Done as listed, with these deviations from the draft below:
+
+- `companion-app/.gitignore` stays (nested `.gitignore` is plain git, keeps the companion self-contained); the root
+  one covers the Zephyr side. `.gitattributes` is merged into the root.
+- The root `.vscode/` is the **host window for the companion** (`cmake.sourceDirectory = companion-app`, presets,
+  clangd, Qt extensions). The firmware window uses `firmware/.vscode/` inside the devcontainer.
+  `companion-app/.vscode/` stays for opening that folder on its own (its `launch.json`/`tasks.json` assume it).
+- `firmware/.clangd` sets no `CompilationDatabase`: clangd finds `<app>/build/compile_commands.json` per app
+  (build without `-d`).
+- `samples.yml` runs on changes to `firmware/samples/**` (not dispatch-only); `firmware.yml` for the real app comes
+  with phase 1. The old `build.yml`/`tests.yml`/`renode.yml` are merged into `samples.yml`.
+- qmlformat is not a pre-commit hook (needs the vcpkg Qt on PATH); the companion workflow's `qml-format-check`
+  target covers it.
+- Every tracked C/C++ file was reformatted once with the root `.clang-format` (nexus style).
+- `firmware/app/` (copy of the emul-shell-gpio sample) is the start of the balancer app, so the Zephyr app lives in
+  `firmware/app/`, not directly in `firmware/` as §5 shows; read §5's `firmware/` tree as `firmware/app/`.
 
 ### 2.2 Devcontainer (firmware, must work)
 

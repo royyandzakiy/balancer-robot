@@ -1,5 +1,5 @@
 {
-  "name": "Zephyr & NCS Build Environment (macOS, no USB)",
+  "name": "Firmware (Zephyr, macOS, no USB)",
   // Image is amd64 only; Apple Silicon runs it emulated and builds are
   // roughly 3-5x slower. No /dev passthrough, so no USB debug probes.
   "image": "ghcr.io/royyandzakiy/zephyr-devcontainer-devel:z4.4.0-sdk1.0.1",
@@ -46,6 +46,8 @@
     }
   },
 
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // The whole repo is mounted (../protocol, ../tools stay reachable), but the window opens on
+  // firmware/ so firmware/.vscode and firmware/.clangd apply.
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/firmware",
   "postStartCommand": "/opt/devcontainer/setup-sdks.sh"
 }

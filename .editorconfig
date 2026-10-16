@@ -1,25 +1,56 @@
-# 4-space indentation, unlike Zephyr upstream (tabs).
+# One file for the whole repo. Indent rules match .clang-format, .cmake-format.yaml and .qmlformat.ini.
 root = true
 
 [*]
+charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
-charset = utf-8
 
-[*.{c,h,cpp,hpp,overlay,dts,dtsi}]
+# C / C++: 4 spaces, 120 cols (.clang-format)
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx}]
 indent_style = space
 indent_size = 4
-max_line_length = 100
+max_line_length = 120
+
+# Devicetree, 4 spaces unlike Zephyr upstream (tabs)
+[*.{overlay,dts,dtsi}]
+indent_style = space
+indent_size = 4
+
+# QML (.qmlformat.ini)
+[*.qml]
+indent_style = space
+indent_size = 4
 
 [*.py]
 indent_style = space
 indent_size = 4
 
+# CMake (.cmake-format.yaml)
+[{CMakeLists.txt,*.cmake}]
+indent_style = space
+indent_size = 2
+
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2
 
+[{.clangd,.clang-tidy,.clang-format}]
+indent_style = space
+indent_size = 2
+
+# CMakePresets.json / vcpkg.json are tab-indented
+[*.json]
+indent_style = tab
+indent_size = 4
+
+# ...except VS Code and devcontainer JSONC
+[{.vscode/*.json,**/.vscode/*.json,.devcontainer/**.json}]
+indent_style = space
+indent_size = 2
+
+# Two trailing spaces are a hard line break
 [*.md]
 trim_trailing_whitespace = false
 

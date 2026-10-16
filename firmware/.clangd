@@ -1,0 +1,35 @@
+# No CompilationDatabase: clangd finds <app>/build/compile_commands.json per app.
+# Only a dir named exactly build/ is found, so build with no -d.
+
+CompileFlags:
+  # Alternative: pin one build directory (goes stale when you build another board).
+  # CompilationDatabase: .
+
+  Remove:
+    - -Werror
+    - -pedantic
+    - -fno-reorder-functions
+    - -fno-defer-pop
+    - -fno-freestanding
+    - --param=min-pagesize=*
+    - -mfp16-format=*
+    - -fno-printf-return-value
+    - -mlongcalls
+    - -fstrict-volatile-bitfields
+    # Xtensa (ESP32) flags, plus debug, optimisation and target flags clangd does not need.
+    - -mtext-section-literals
+    - -mlong-calls
+    - -fno-builtin
+    - -g*
+    - -O*
+    - -ffunction-sections
+    - -fdata-sections
+    - -march=*
+    - -mtune=*
+    - -mabi=*
+    - -mcmodel=*
+
+Diagnostics:
+  # Zephyr headers pull in transitively-used symbols by design.
+  UnusedIncludes: None
+  MissingIncludes: None

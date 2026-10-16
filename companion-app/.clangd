@@ -1,4 +1,5 @@
-# clangd language-server config. Concerns are split by tool:
+# clangd config for companion-app/; Index, inlay hints, hover and completion come from the root .clangd.
+# Concerns are split by tool:
 #   .clangd        -> how the language server behaves (this file)
 #   .clang-tidy    -> which static-analysis checks run
 #   .clang-format  -> formatting style
@@ -19,10 +20,6 @@ CompileFlags:
     - /Fo*
     - /Fd*
 
-Index:
-  Background: Build          # keep the project index warm in the background
-  StandardLibrary: Yes       # index the STL for completion/xrefs
-
 Diagnostics:
   UnusedIncludes: Strict     # IncludeCleaner: flag headers you don't use
   # Off for Qt: Q_OBJECT, signals, emit, QML_ELEMENT live in internal headers (qtmetamacros.h, ...)
@@ -30,16 +27,3 @@ Diagnostics:
   MissingIncludes: None
   ClangTidy:
     FastCheckFilter: Loose   # run more tidy checks in-editor (config in .clang-tidy)
-
-InlayHints:
-  Enabled: Yes
-  ParameterNames: Yes
-  DeducedTypes: Yes
-  Designators: Yes
-  BlockEnd: No
-
-Hover:
-  ShowAKA: Yes               # resolve typedefs in hover ("aka: std::string")
-
-Completion:
-  AllScopes: Yes             # suggest symbols from all namespaces, with auto-import

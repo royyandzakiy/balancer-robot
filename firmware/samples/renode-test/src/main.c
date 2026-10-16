@@ -1,6 +1,6 @@
-#include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 
 #define BUTTON_NODE DT_ALIAS(sw0)
@@ -16,16 +16,13 @@ static struct gpio_callback button_cb_data;
  */
 static bool led_on;
 
-static void button_pressed_cb(const struct device *dev, struct gpio_callback *cb,
-                              uint32_t pins)
-{
+static void button_pressed_cb(const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
     led_on = !led_on;
     gpio_pin_set_dt(&led, led_on);
     printk("Button pressed! LED is now %s\n", led_on ? "ON" : "OFF");
 }
 
-int main(void)
-{
+int main(void) {
     int ret;
 
     printk("Board: %s\n", CONFIG_BOARD_TARGET);
