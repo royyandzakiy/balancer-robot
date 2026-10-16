@@ -1,0 +1,18 @@
+# The style of the code in apps/, with 4-space indentation unlike Zephyr upstream (tabs).
+# The code is not reformatted to it yet. To do that:
+#   git ls-files '*.c' '*.h' '*.cpp' '*.hpp' | xargs clang-format -i
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+BreakBeforeBraces: Linux
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+PointerAlignment: Right
+SortIncludes: false

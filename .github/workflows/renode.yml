@@ -1,0 +1,44 @@
+# Builds apps/renode-test for the nRF52840 DK and runs its Robot suite in Renode.
+# Renode and Robot Framework come with the CI image. No hardware.
+
+name: Renode
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  renode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    container:
+      image: ghcr.io/royyandzakiy/zephyr-devcontainer-ci:z4.4.0-sdk1.0.1
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build for nrf52840dk
+        working-directory: apps/renode-test
+        run: west build -b nrf52840dk/nrf52840 -p always
+
+      # Run from build/ so the reports land there, as in the app's README.
+      - name: Run the Robot suite
+        working-directory: apps/renode-test/build
+        run: renode-test ../button_led.robot
+
+      - name: Upload Robot reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renode-reports
+          path: |
+            apps/renode-test/build/log.html
+            apps/renode-test/build/report.html
+            apps/renode-test/build/robot_output.xml
+            apps/renode-test/build/logs/
+          if-no-files-found: warn

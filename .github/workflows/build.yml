@@ -1,0 +1,42 @@
+# Builds apps/emul-shell-gpio for every board it carries an overlay for. Build only,
+# no hardware.
+
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    container:
+      image: ghcr.io/royyandzakiy/zephyr-devcontainer-ci:z4.4.0-sdk1.0.1
+
+    strategy:
+      # One broken board should not hide the result of the others.
+      fail-fast: false
+      matrix:
+        include:
+          - board: native_sim/native
+          - board: qemu_cortex_m3
+          - board: nrf5340dk/nrf5340/cpuapp
+          - board: nucleo_g474re
+          # ESP32 builds the app image only, as in the README.
+          - board: esp32_devkitc/esp32/procpu
+            args: --no-sysbuild
+          - board: esp32s3_devkitc/esp32s3/procpu
+            args: --no-sysbuild
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # No west init needed: west finds its workspace through ZEPHYR_BASE, set by the image.
+      - name: Build for ${{ matrix.board }}
+        run: west build -s apps/emul-shell-gpio -d build -p always -b ${{ matrix.board }} ${{ matrix.args }}

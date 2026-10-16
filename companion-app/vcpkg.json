@@ -1,0 +1,68 @@
+{
+  "dependencies": [
+    "fmt",
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features": [
+        "concurrent",
+        "doubleconversion",
+        "freetype",
+        "gui",
+        "harfbuzz",
+        "jpeg",
+        "network",
+        "opengl",
+        "pcre2",
+        "png",
+        "testlib",
+        "thread",
+        {
+          "name": "egl",
+          "platform": "linux"
+        },
+        {
+          "name": "fontconfig",
+          "platform": "linux"
+        },
+        {
+          "name": "xcb",
+          "platform": "linux"
+        },
+        {
+          "name": "xcb-xlib",
+          "platform": "linux"
+        },
+        {
+          "name": "xkb",
+          "platform": "linux"
+        },
+        {
+          "name": "xkbcommon-x11",
+          "platform": "linux"
+        },
+        {
+          "name": "xrender",
+          "platform": "linux"
+        }
+      ]
+    },
+    "qtdeclarative",
+    "qtquick3d"
+  ],
+  "features": {
+    "tracy": {
+      "description": "Tracy runtime profiler (enabled automatically when ENABLE_TRACY=ON)",
+      "dependencies": [
+        "tracy"
+      ]
+    },
+    "spix": {
+      "description": "AnyRPC for the Spix UI-automation server (enabled automatically when ENABLE_SPIX=ON)",
+      "dependencies": [
+        "anyrpc"
+      ]
+    }
+  },
+  "builtin-baseline": "8f63c9ed5897d7367a92a442a79f91721e0fd38f"
+}

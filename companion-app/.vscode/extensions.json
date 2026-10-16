@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "llvm-vs-code-extensions.vscode-clangd",
+    "ms-vscode.cmake-tools",
+    "vadimcn.vscode-lldb",
+    "editorconfig.editorconfig",
+    // Official Qt extensions: QML language server (qmlls, reads the generated .qmlls.ini),
+    // QML syntax/formatting, and Qt type visualizers for the debugger.
+    "theqtcompany.qt-qml",
+    "theqtcompany.qt-core"
+  ],
+  // ms-vscode.cpptools is OPTIONAL: only needed for the cppvsdbg (MSVC) and cppdbg/gdb (GCC on Linux)
+  // debug configs in launch.json. Its IntelliSense/formatting/analysis are disabled in
+  // settings.json, so it won't compete with clangd. Clang-only users don't need it.
+  "unwantedRecommendations": []
+}

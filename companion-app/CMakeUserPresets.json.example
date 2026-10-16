@@ -1,0 +1,29 @@
+{
+	"version": 4,
+	"configurePresets": [
+		{
+			"name": "my-clang-cl-debug",
+			"displayName": "Clang-CL Debug (my vcpkg)",
+			"inherits": "clang-cl-debug",
+			"cacheVariables": {
+				"VCPKG_ROOT_PATH": "C:/vcpkg",
+				"BUILD_TESTING": "ON"
+			}
+		},
+		{
+			"name": "my-clang-cl-release",
+			"displayName": "Clang-CL Release (my vcpkg)",
+			"inherits": "clang-cl-release",
+			"cacheVariables": {
+				"VCPKG_ROOT_PATH": "C:/vcpkg"
+			}
+		}
+	],
+	"buildPresets": [
+		{ "name": "my-clang-cl-debug", "configurePreset": "my-clang-cl-debug", "configuration": "Debug" },
+		{ "name": "my-clang-cl-release", "configurePreset": "my-clang-cl-release", "configuration": "Release" }
+	],
+	"testPresets": [
+		{ "name": "test-my-clang-cl-debug", "configurePreset": "my-clang-cl-debug", "output": { "outputOnFailure": true } }
+	]
+}

@@ -1,0 +1,37 @@
+# project_options.local.cmake — gitignored, never committed.
+#
+# Machine-local overrides. CMakeLists.txt includes this BEFORE project_options.cmake, so
+# (under policy CMP0077, NEW by default at cmake_minimum_required 3.28) these plain set()s
+# win over the option() defaults. Copy to project_options.local.cmake and uncomment what you want.
+# Presets and -D still override this file.
+
+# =============================================================================
+# Package manager
+# =============================================================================
+# set(PKG_MANAGER vcpkg)              # default; "none" = bring your own Qt (CMAKE_PREFIX_PATH / toolchain)
+# set(VCPKG_ROOT_PATH "C:/vcpkg")     # only if vcpkg isn't auto-detected (PATH, VCPKG_ROOT, C:/vcpkg, ~/vcpkg, ...)
+
+# =============================================================================
+# Tests
+# =============================================================================
+# set(BUILD_TESTING ON)               # GTest (core), QtTest (viewmodels), Qt Quick Test (QML)
+# set(ENABLE_SPIX ON)                 # + Spix E2E — opens an automation port, test builds only
+
+# =============================================================================
+# Code quality
+# =============================================================================
+# set(ENABLE_STRICT_COMPILER ON)      # warnings become errors (-Werror / /WX)
+# set(ENABLE_CLANG_TIDY ON)           # clang-tidy on first-party production code
+
+# =============================================================================
+# Build speed
+# =============================================================================
+# set(ENABLE_CCACHE ON)               # ccache — big win when switching branches / reconfiguring
+# set(ENABLE_FAST_LINKER ON)          # mold (Linux) / lld instead of the default linker
+# set(ENABLE_PCH ON)                  # faster clean builds, slower one-file rebuilds
+# set(ENABLE_UNITY_BUILD ON)          # fastest clean builds, hostile to incremental builds
+
+# =============================================================================
+# Profiling — only while actively profiling
+# =============================================================================
+# set(ENABLE_TRACY ON)                # Tracy for the C++ side (QML: use qmlprofiler)

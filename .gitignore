@@ -1,0 +1,25 @@
+# Build output, including `-d` dirs like build_native64 and build_nrf5340dk.
+# Anchored, since a bare build* would also ignore folders like docs/building/.
+/build*/
+apps/**/build*/
+
+# Twister output. Not twister*/, which would also ignore twister_harness/ or docs/twister/.
+twister-out*/
+
+# Python
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+
+# Local only
+.env
+.claude/settings.local.json
+ANSWER.md
+
+# OS files.
+.DS_Store
+Thumbs.db
+
+.idea
+
+.idea

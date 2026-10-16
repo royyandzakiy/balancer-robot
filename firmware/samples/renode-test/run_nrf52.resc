@@ -1,0 +1,32 @@
+:name: nRF52840 DK
+:description: Runs a Zephyr ELF on Renode's nRF52840 model, with the DK's sw0 and led0.
+:
+: Set $elf to an absolute path before including this script. There is no `start`, so
+: button_led.robot can attach its testers first. By hand, from apps/renode-test:
+:
+:   renode --console --disable-xwt -e "\$elf=@$PWD/build/zephyr/zephyr.elf; include @run_nrf52.resc; start"
+:
+: Renode's own nrf52840dk_nrf52840.repl is not used: its buttons lack `invert: true`, so
+: the active-low sw0 reads as held from boot. The button and LED below match the DK.
+
+set platform
+"""
+using "platforms/cpus/nrf52840.repl"
+
+gpio0:
+    13 -> led0@0
+
+led0: Miscellaneous.LED @ gpio0 13
+    invert: true
+
+sw0: Miscellaneous.Button @ gpio0 11
+    invert: true
+    -> gpio0@11
+"""
+
+mach create "nrf52840"
+machine LoadPlatformDescriptionFromString $platform
+
+showAnalyzer sysbus.uart0
+
+sysbus LoadELF $elf

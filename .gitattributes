@@ -1,0 +1,8 @@
+# LF everywhere, whatever core.autocrlf says: edited on Windows, built in a Linux container.
+* text=auto eol=lf
+
+# Never converted.
+*.png  binary
+*.hex  binary
+*.bin  binary
+*.elf  binary

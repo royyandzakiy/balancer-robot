@@ -1,0 +1,41 @@
+# Runs every test suite under apps/ on native_sim, with the same command the README
+# gives for local runs. No hardware.
+
+name: Tests (native_sim)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  twister:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    container:
+      image: ghcr.io/royyandzakiy/zephyr-devcontainer-ci:z4.4.0-sdk1.0.1
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run every suite on native_sim
+        run: west twister -T apps/ -p native_sim
+
+      # Reports and logs only, on every run, so a pass can be compared with a failure.
+      # The build directories are left out, they are hundreds of MB.
+      - name: Upload twister reports and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twister-reports
+          path: |
+            twister-out/twister.json
+            twister-out/twister_report.xml
+            twister-out/**/handler.log
+            twister-out/**/build.log
+            twister-out/**/twister_harness.log
+          if-no-files-found: warn

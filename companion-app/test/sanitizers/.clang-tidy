@@ -1,0 +1,4 @@
+# These are sanitizer trip-wires: they intentionally contain undefined behavior, leaks,
+# data races, and out-of-bounds access to verify each sanitizer catches its bug class.
+# Disable clang-tidy here so the deliberate violations don't surface as findings.
+Checks: '-*'

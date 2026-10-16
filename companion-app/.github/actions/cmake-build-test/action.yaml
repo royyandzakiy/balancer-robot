@@ -1,0 +1,37 @@
+# .github/actions/cmake-build-test/action.yaml
+name: CMake Build & Test
+description: 'Configures, builds, and tests a CMake project using presets'
+inputs:
+  preset:
+    description: 'The CMake preset to use for configuration and building'
+    required: true
+  cmake-args:
+    description: 'Additional arguments passed directly to the CMake configure command'
+    default: ''
+  retry:
+    description: 'Enable retrying the configuration step up to 3 times if it fails'
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Configure
+      shell: bash
+      run: |
+        if [ "${{ inputs.retry }}" = "true" ]; then
+          for i in 1 2 3; do
+            cmake --preset ${{ inputs.preset }} ${{ inputs.cmake-args }} && exit 0
+            echo "Attempt $i failed, retrying..."
+            sleep 10
+          done
+          exit 1
+        else
+          cmake --preset ${{ inputs.preset }} ${{ inputs.cmake-args }}
+        fi
+
+    - name: Build
+      shell: bash
+      run: cmake --build --preset ${{ inputs.preset }}
+
+    - name: Test
+      shell: bash
+      run: ctest --preset test-${{ inputs.preset }}
